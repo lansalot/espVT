@@ -56,7 +56,7 @@ zasilaniem SY8205 i złączem RS-232; przewidziany materiał to PETG.
 - `main/lvgl_terminal_view.*` - ekran diagnostyczny uruchamiany przed zaladowaniem working setu.
 - `main/logo_image.*` - wyswietlanie zmniejszonego logo VTISOBUS/FarmNavi na ekranie startowym i oczekiwania.
 - `main/object_pool_store.*` - zapis/odczyt object pooli w flash.
-- `tools/bmp_to_rgb565.py` - automatyczne kadrowanie i konwersja `logo.png` do RGB565 podczas buildu.
+- `tools/png_to_rgb565.py` - automatyczne kadrowanie i konwersja `logo.png` do RGB565 podczas buildu.
 - `main/gnss_um982.*` - opcjonalny odbior NMEA z UM982 albo portu RS-232 oraz NTRIP/RTCM dla wariantu RTK.
 
 ## AgIsoStack++
@@ -79,6 +79,8 @@ i ustaw `ISOVT_MANUFACTURER_CODE` i `ISOVT_IDENTITY_NUMBER`.
 ## Budowanie
 
 Wymagane jest ESP-IDF z obsluga ESP32-S3.
+Logo jest generowane z `logo.png` przez standardowa biblioteke Pythona, bez
+narzedzia `sips`. Wlasne logo musi byc nieprzeplatanym 8-bitowym PNG RGB.
 
 Projekt ma domyslnie `CONFIG_APP_NO_BLOBS=y`, aby nie linkowac binarnych
 bibliotek Wi-Fi/Bluetooth. Terminal korzysta z CAN/TWAI, I2C i SPIFFS, wiec ta
