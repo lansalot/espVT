@@ -92,6 +92,10 @@ idf.py build
 idf.py flash monitor
 ```
 
+Interfejs terminala jest w jezyku angielskim. Opcja **Machine Language**
+przekazuje preferowany jezyk do maszyn przez ISOBUS; nie zmienia jezyka menu
+terminala. Wyswietlenie tekstu maszyny w wybranym jezyku zalezy od maszyny.
+
 ## Jeden plik firmware do release
 
 Po zbudowaniu wariantu RS-232 można utworzyć kompletny obraz zawierający

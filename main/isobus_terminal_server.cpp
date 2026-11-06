@@ -271,7 +271,7 @@ private:
     {
         ESP_LOGI(TAG, "Identify VT requested: terminal number %u",
                  static_cast<unsigned>(vt_scene_renderer::get_terminal_settings().terminal_number));
-        vt_scene_renderer::set_notice("IDENTYFIKACJA TERMINALA VT");
+        vt_scene_renderer::set_notice("VT TERMINAL IDENTIFICATION");
         render_working_set(ui_active_working_set);
     }
 
@@ -1636,7 +1636,7 @@ bool open_input_editor(const std::shared_ptr<isobus::VTObject> &object,
                 else if (!child)
                 {
                     char label[40];
-                    std::snprintf(label, sizeof(label), "POZYCJA %u", static_cast<unsigned>(index + 1U));
+                    std::snprintf(label, sizeof(label), "ITEM %u", static_cast<unsigned>(index + 1U));
                     item.label = label;
                 }
                 items.push_back(std::move(item));
@@ -1832,20 +1832,20 @@ bool on_touch_pressed(std::uint16_t x, std::uint16_t y)
                 vt_scene_renderer::apply_terminal_action(target.terminal_action);
                 const bool saved = save_terminal_settings();
                 result = !terminal_server || configure_language_and_units(true);
-                vt_scene_renderer::set_notice((result && saved) ? "USTAWIENIA ZAPISANE I WYSLANE DO SIECI" :
-                                                                    "USTAWIENIE ZMIENIONE, BLAD ZAPISU LUB WYSYLANIA");
+                vt_scene_renderer::set_notice((result && saved) ? "SETTINGS SAVED AND SENT TO NETWORK" :
+                                                                    "SETTING CHANGED; SAVE OR SEND FAILED");
                 break;
             }
             case vt_scene_renderer::TerminalAction::CycleTerminalNumber:
                 vt_scene_renderer::apply_terminal_action(target.terminal_action);
                 result = save_terminal_settings();
-                vt_scene_renderer::set_notice(result ? "NUMER VT ZAPISANY, URUCHOM TERMINAL PONOWNIE" :
-                                                        "NUMER ZMIENIONY, ALE ZAPIS NIE UDAL SIE");
+                vt_scene_renderer::set_notice(result ? "VT NUMBER SAVED; RESTART TERMINAL" :
+                                                        "NUMBER CHANGED BUT SAVE FAILED");
                 break;
             case vt_scene_renderer::TerminalAction::ToggleDiagnostics:
                 vt_scene_renderer::apply_terminal_action(target.terminal_action);
                 result = save_terminal_settings();
-                vt_scene_renderer::set_notice(result ? "DIAGNOSTYKA: USTAWIENIE ZAPISANE" : "BLAD ZAPISU DIAGNOSTYKI");
+                vt_scene_renderer::set_notice(result ? "DIAGNOSTICS SETTING SAVED" : "FAILED TO SAVE DIAGNOSTICS");
                 break;
             case vt_scene_renderer::TerminalAction::CycleDataMaskSize:
                 vt_scene_renderer::apply_terminal_action(target.terminal_action);
@@ -1854,8 +1854,8 @@ bool on_touch_pressed(std::uint16_t x, std::uint16_t y)
                 {
                     result = object_pool_store::erase_all();
                 }
-                vt_scene_renderer::set_notice(result ? "ROZMIAR ZAPISANY; URUCHOM TERMINAL PONOWNIE" :
-                                                        "ROZMIAR ZMIENIONY, ALE ZAPIS LUB USUNIECIE PUL NIE UDALO SIE");
+                vt_scene_renderer::set_notice(result ? "SIZE SAVED; RESTART TERMINAL" :
+                                                        "SIZE CHANGED; SAVE OR POOL DELETION FAILED");
                 break;
             case vt_scene_renderer::TerminalAction::DecreaseControlVolume:
             case vt_scene_renderer::TerminalAction::IncreaseControlVolume:
@@ -1869,44 +1869,44 @@ bool on_touch_pressed(std::uint16_t x, std::uint16_t y)
                 vt_audio::set_alarm_volume(settings.alarm_volume);
                 vt_audio::set_muted(settings.audio_muted);
                 result = save_terminal_settings();
-                vt_scene_renderer::set_notice(result ? "USTAWIENIA DZWIEKU ZAPISANE" : "BLAD ZAPISU USTAWIEN DZWIEKU");
+                vt_scene_renderer::set_notice(result ? "AUDIO SETTINGS SAVED" : "FAILED TO SAVE AUDIO SETTINGS");
                 break;
             }
             case vt_scene_renderer::TerminalAction::ToggleAuxOLegacy:
                 vt_scene_renderer::apply_terminal_action(target.terminal_action);
                 result = save_terminal_settings();
-                vt_scene_renderer::set_notice(result ? "TRYB AUX ZAPISANY - URUCHOM TERMINAL PONOWNIE" :
-                                                        "NIE UDALO SIE ZAPISAC TRYBU AUX");
+                vt_scene_renderer::set_notice(result ? "AUX MODE SAVED - RESTART TERMINAL" :
+                                                        "FAILED TO SAVE AUX MODE");
                 break;
             case vt_scene_renderer::TerminalAction::TestControlAudio:
                 vt_audio::play_test_control();
-                vt_scene_renderer::set_notice(vt_audio::is_muted() ? "DZWIEK JEST WYCISZONY" : "TEST SYGNALU");
+                vt_scene_renderer::set_notice(vt_audio::is_muted() ? "AUDIO IS MUTED" : "SIGNAL TEST");
                 break;
             case vt_scene_renderer::TerminalAction::TestAlarmAudio:
                 vt_audio::play_test_alarm();
-                vt_scene_renderer::set_notice(vt_audio::is_muted() ? "DZWIEK JEST WYCISZONY" : "TEST ALARMU");
+                vt_scene_renderer::set_notice(vt_audio::is_muted() ? "AUDIO IS MUTED" : "ALARM TEST");
                 break;
             case vt_scene_renderer::TerminalAction::RefreshNetwork:
                 result = can_monitor::request_address_claims();
-                vt_scene_renderer::set_notice(result ? "WYSZUKIWANIE URZADZEN URUCHOMIONE" : "NIE UDALO SIE ODSWIEZYC SIECI");
+                vt_scene_renderer::set_notice(result ? "DEVICE SEARCH STARTED" : "FAILED TO REFRESH NETWORK");
                 break;
             case vt_scene_renderer::TerminalAction::EraseActivePool:
                 result = working_set && object_pool_store::erase_all(client_name(working_set));
-                vt_scene_renderer::set_notice(result ? "ZAPISANA PULA AKTYWNEJ MASZYNY USUNIETA" : "BRAK PULI LUB BLAD USUWANIA");
+                vt_scene_renderer::set_notice(result ? "ACTIVE MACHINE POOL DELETED" : "NO POOL OR DELETE FAILED");
                 break;
             case vt_scene_renderer::TerminalAction::EraseAllPools:
                 result = object_pool_store::erase_all();
-                vt_scene_renderer::set_notice(result ? "WSZYSTKIE ZAPISANE PULE USUNIETE" : "BLAD USUWANIA PUL");
+                vt_scene_renderer::set_notice(result ? "ALL STORED POOLS DELETED" : "FAILED TO DELETE POOLS");
                 break;
             case vt_scene_renderer::TerminalAction::ClearAuxAssignments:
                 result = working_set && working_set->get_control_function() &&
                          aux_n::unassign_all(working_set->get_control_function(), true);
-                vt_scene_renderer::set_notice(result ? "POLECENIE USUNIECIA AUX-N WYSLANE" : "BRAK AKTYWNEJ MASZYNY LUB BLAD AUX-N");
+                vt_scene_renderer::set_notice(result ? "AUX-N CLEAR COMMAND SENT" : "NO ACTIVE MACHINE OR AUX-N ERROR");
                 break;
             case vt_scene_renderer::TerminalAction::UnassignSelectedAux:
                 result = aux_n::unassign_selected();
-                vt_scene_renderer::set_notice(result ? "USUNIECIE WYBRANEGO PRZYPISANIA WYSLANE" :
-                                                        "NAJPIERW WYBIERZ FUNKCJE AUX-N");
+                vt_scene_renderer::set_notice(result ? "SELECTED ASSIGNMENT CLEAR SENT" :
+                                                        "SELECT AN AUX-N FUNCTION FIRST");
                 break;
             case vt_scene_renderer::TerminalAction::ToggleAuxLearn:
             {
@@ -1915,13 +1915,13 @@ bool on_touch_pressed(std::uint16_t x, std::uint16_t y)
                 {
                     aux_n::cancel_learning();
                     result = true;
-                    vt_scene_renderer::set_notice("UCZENIE AUX-N ANULOWANE");
+                    vt_scene_renderer::set_notice("AUX-N LEARNING CANCELLED");
                 }
                 else
                 {
                     result = aux_n::begin_learning();
-                    vt_scene_renderer::set_notice(result ? "PORUSZ WYBRANYM PRZYCISKIEM AUX-N" :
-                                                            "WYBIERZ FUNKCJE I PODLACZ AUX-N");
+                    vt_scene_renderer::set_notice(result ? "ACTUATE THE SELECTED AUX-N INPUT" :
+                                                            "SELECT A FUNCTION AND CONNECT AUX-N");
                 }
                 break;
             }
@@ -1947,14 +1947,14 @@ bool on_touch_pressed(std::uint16_t x, std::uint16_t y)
         if (target.kind == vt_scene_renderer::HitKind::AuxFunction)
         {
             result = aux_n::select_function(protocol, target.working_set_name, target.object_id);
-            vt_scene_renderer::set_notice(result ? "FUNKCJA WYBRANA - DOTKNIJ ZGODNEGO WEJSCIA" :
-                                                   "NIE UDALO SIE WYBRAC FUNKCJI AUX");
+            vt_scene_renderer::set_notice(result ? "FUNCTION SELECTED - TOUCH A COMPATIBLE INPUT" :
+                                                   "FAILED TO SELECT AUX FUNCTION");
         }
         else
         {
             result = aux_n::assign_selected(protocol, target.working_set_name, target.object_id);
-            vt_scene_renderer::set_notice(result ? "PRZYPISANIE AUX WYSLANE" :
-                                                   "WYBIERZ FUNKCJE I ZGODNE WEJSCIE AUX");
+            vt_scene_renderer::set_notice(result ? "AUX ASSIGNMENT SENT" :
+                                                   "SELECT A FUNCTION AND COMPATIBLE AUX INPUT");
         }
         render_working_set(terminal_server ? terminal_server->get_ui_active_working_set() : nullptr);
         return result;

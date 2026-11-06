@@ -92,6 +92,10 @@ idf.py build
 idf.py flash monitor
 ```
 
+The terminal interface is in English. **Machine Language** sends the preferred
+language to implements over ISOBUS; it does not change the terminal's own
+menus. Whether implement-provided text changes depends on the implement.
+
 ## Single Firmware File for Release
 
 After building the RS-232 variant you can create a complete image containing

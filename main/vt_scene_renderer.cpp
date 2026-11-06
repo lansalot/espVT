@@ -1621,7 +1621,7 @@ void render_working_set_bar(
                           "SA %u",
                           static_cast<unsigned>(working_set->get_control_function()->get_address()));
             lcd_panel::draw_text(VT_ORIGIN_X + 18, y + 34, 2, address, CHROME_TEXT);
-            lcd_panel::draw_text(VT_ORIGIN_X + 15, y + 58, 1, "BRAK PULI", CHROME_BORDER);
+            lcd_panel::draw_text(VT_ORIGIN_X + 15, y + 58, 1, "NO POOL", CHROME_BORDER);
         }
 
         if (working_set_object)
@@ -1943,7 +1943,7 @@ void render_machine_page(
     const std::shared_ptr<isobus::VirtualTerminalServerManagedWorkingSet> &active_working_set,
     const std::vector<std::shared_ptr<isobus::VirtualTerminalServerManagedWorkingSet>> &working_sets)
 {
-    draw_page_title("MASZYNY", "STEROWNIKI VT I ZAPISANE PULE OBIEKTOW");
+    draw_page_title("MACHINES", "VT CONTROLLERS AND STORED OBJECT POOLS");
     const std::uint64_t active_name = working_set_name(active_working_set);
     int y = 112;
     for (const auto &working_set : working_sets)
@@ -1959,8 +1959,8 @@ void render_machine_page(
         draw_outline(LEFT_INFO_WIDTH + 28, y, 760, 66, active ? 0x05A8 : 0xBDF7, active ? 3 : 1);
         char title[56];
         char detail[72];
-        std::snprintf(title, sizeof(title), "%sSTEROWNIK SA %u", active ? "AKTYWNY  " : "", static_cast<unsigned>(control_function->get_address()));
-        std::snprintf(detail, sizeof(detail), "NAME %016llX   ZAPISANE WERSJE %u",
+        std::snprintf(title, sizeof(title), "%sCONTROLLER SA %u", active ? "ACTIVE  " : "", static_cast<unsigned>(control_function->get_address()));
+        std::snprintf(detail, sizeof(detail), "NAME %016llX   STORED VERSIONS %u",
                       static_cast<unsigned long long>(name),
                       static_cast<unsigned>(object_pool_store::list_versions(name).size()));
         lcd_panel::draw_text(LEFT_INFO_WIDTH + 46, y + 12, 2, title, 0x1082);
@@ -1979,69 +1979,69 @@ void render_machine_page(
     }
     if (working_sets.empty())
     {
-        lcd_panel::draw_text(LEFT_INFO_WIDTH + 44, 142, 2, "BRAK STEROWNIKOW OCZEKUJACYCH NA VT", 0x52AA);
+        lcd_panel::draw_text(LEFT_INFO_WIDTH + 44, 142, 2, "NO CONTROLLERS WAITING FOR VT", 0x52AA);
     }
 
     const auto storage = object_pool_store::get_statistics();
     char storage_text[72];
-    std::snprintf(storage_text, sizeof(storage_text), "PAMIEC: %u PUL   %u KB WOLNE",
+    std::snprintf(storage_text, sizeof(storage_text), "STORAGE: %u POOLS   %u KB FREE",
                   static_cast<unsigned>(storage.object_pool_count),
                   static_cast<unsigned>((storage.total_bytes - std::min(storage.total_bytes, storage.used_bytes)) / 1024U));
     lcd_panel::draw_text(LEFT_INFO_WIDTH + 36, 434, 2, storage_text, 0x52AA);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 478, 360, 72, "USUN PULE AKTYWNEJ", vt_scene_renderer::TerminalAction::EraseActivePool, false, true);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 416, 478, 372, 72, "USUN WSZYSTKIE PULE", vt_scene_renderer::TerminalAction::EraseAllPools, false, true);
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 478, 360, 72, "DELETE ACTIVE POOLS", vt_scene_renderer::TerminalAction::EraseActivePool, false, true);
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 416, 478, 372, 72, "DELETE ALL POOLS", vt_scene_renderer::TerminalAction::EraseAllPools, false, true);
 }
 
 void render_terminal_page(std::vector<ScreenRect> &targets)
 {
-    draw_page_title("TERMINAL", "USTAWIENIA PRZEKAZYWANE MASZYNOM PRZEZ ISOBUS");
-    const char *language = "JEZYK: POLSKI   KRAJ: PL";
+    draw_page_title("TERMINAL", "LANGUAGE AND UNITS SENT TO MACHINES");
+    const char *language = "MACHINE LANGUAGE: POLISH   COUNTRY: PL";
     switch (terminal_settings.language)
     {
         case vt_scene_renderer::TerminalLanguage::English:
-            language = "JEZYK: ENGLISH   KRAJ: GB";
+            language = "MACHINE LANGUAGE: ENGLISH   COUNTRY: GB";
             break;
         case vt_scene_renderer::TerminalLanguage::German:
-            language = "JEZYK: DEUTSCH   KRAJ: DE";
+            language = "MACHINE LANGUAGE: GERMAN   COUNTRY: DE";
             break;
         case vt_scene_renderer::TerminalLanguage::French:
-            language = "JEZYK: FRANCAIS   KRAJ: FR";
+            language = "MACHINE LANGUAGE: FRENCH   COUNTRY: FR";
             break;
         case vt_scene_renderer::TerminalLanguage::Hungarian:
-            language = "JEZYK: MAGYAR   KRAJ: HU";
+            language = "MACHINE LANGUAGE: HUNGARIAN   COUNTRY: HU";
             break;
         case vt_scene_renderer::TerminalLanguage::Dutch:
-            language = "JEZYK: NEDERLANDS   KRAJ: NL";
+            language = "MACHINE LANGUAGE: DUTCH   COUNTRY: NL";
             break;
         case vt_scene_renderer::TerminalLanguage::Russian:
-            language = "JEZYK: RUSSIAN   KRAJ: RU";
+            language = "MACHINE LANGUAGE: RUSSIAN   COUNTRY: RU";
             break;
         case vt_scene_renderer::TerminalLanguage::Lithuanian:
-            language = "JEZYK: LIETUVIU   KRAJ: LT";
+            language = "MACHINE LANGUAGE: LITHUANIAN   COUNTRY: LT";
             break;
         default:
             break;
     }
-    const char *date_format = "DATA: DD/MM/RRRR";
+    const char *date_format = "DATE: DD/MM/YYYY";
     if (terminal_settings.date_format == vt_scene_renderer::TerminalDateFormat::MonthDayYear)
     {
-        date_format = "DATA: MM/DD/RRRR";
+        date_format = "DATE: MM/DD/YYYY";
     }
     else if (terminal_settings.date_format == vt_scene_renderer::TerminalDateFormat::YearMonthDay)
     {
-        date_format = "DATA: RRRR-MM-DD";
+        date_format = "DATE: YYYY-MM-DD";
     }
 
     draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 86, 760, 52, language,
                        vt_scene_renderer::TerminalAction::CycleLanguage, true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 142, 760, 52,
-                       terminal_settings.metric_units ? "JEDNOSTKI: METRYCZNE" : "JEDNOSTKI: IMPERIALNE",
+                       terminal_settings.metric_units ? "UNITS: METRIC" : "UNITS: IMPERIAL",
                        vt_scene_renderer::TerminalAction::ToggleUnits, true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 198, 760, 52,
-                       terminal_settings.decimal_comma ? "SEPARATOR DZIESIETNY: PRZECINEK" : "SEPARATOR DZIESIETNY: KROPKA",
+                       terminal_settings.decimal_comma ? "DECIMAL SYMBOL: COMMA" : "DECIMAL SYMBOL: POINT",
                        vt_scene_renderer::TerminalAction::ToggleDecimalSymbol, true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 254, 760, 52,
-                       terminal_settings.twenty_four_hour ? "FORMAT CZASU: 24 H" : "FORMAT CZASU: 12 H AM/PM",
+                       terminal_settings.twenty_four_hour ? "TIME FORMAT: 24 H" : "TIME FORMAT: 12 H AM/PM",
                        vt_scene_renderer::TerminalAction::ToggleTimeFormat, true);
     draw_screen_button(targets,
                        LEFT_INFO_WIDTH + 28,
@@ -2054,7 +2054,7 @@ void render_terminal_page(std::vector<ScreenRect> &targets)
     char terminal_number[48];
     std::snprintf(terminal_number,
                   sizeof(terminal_number),
-                  "NUMER TERMINALA: %u (1-32)",
+                  "TERMINAL NUMBER: %u (1-32)",
                   static_cast<unsigned>(terminal_settings.terminal_number));
     draw_screen_button(targets,
                        LEFT_INFO_WIDTH + 28,
@@ -2067,7 +2067,7 @@ void render_terminal_page(std::vector<ScreenRect> &targets)
     char data_mask_size[48];
     std::snprintf(data_mask_size,
                   sizeof(data_mask_size),
-                  "OBSZAR ROBOCZY: %u X %u",
+                  "WORKING AREA: %u X %u",
                   static_cast<unsigned>(terminal_settings.data_mask_size),
                   static_cast<unsigned>(terminal_settings.data_mask_size));
     draw_screen_button(targets,
@@ -2079,9 +2079,9 @@ void render_terminal_page(std::vector<ScreenRect> &targets)
                        vt_scene_renderer::TerminalAction::CycleDataMaskSize,
                        true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 482, 760, 52,
-                       terminal_settings.show_diagnostics ? "DIAGNOSTYKA NAD MENU: WLACZONA" : "DIAGNOSTYKA NAD MENU: WYLACZONA",
+                       terminal_settings.show_diagnostics ? "DIAGNOSTICS OVER MENU: ON" : "DIAGNOSTICS OVER MENU: OFF",
                        vt_scene_renderer::TerminalAction::ToggleDiagnostics, terminal_settings.show_diagnostics);
-    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 544, 2, "NUMER VT I OBSZAR ROBOCZY WYMAGAJA RESTARTU", 0x52AA);
+    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 544, 2, "VT NUMBER AND WORKING AREA REQUIRE RESTART", 0x52AA);
 }
 
 // Called only by the scene renderer while scene_mutex is held. Use counter
@@ -2123,7 +2123,7 @@ void draw_diagnostics_overlay()
     constexpr int width = 75;
     lcd_panel::fill_rect(x, 12, width, 176, CHROME_DARK);
     char text[24];
-    lcd_panel::draw_text(x + 2, 18, 1, "DIAGNOSTYKA", CHROME_BORDER);
+    lcd_panel::draw_text(x + 2, 18, 1, "DIAGNOSTICS", CHROME_BORDER);
     for (int core = 0; core < 2; ++core)
     {
         if (diagnostics_cpu[core] < 0)
@@ -2152,14 +2152,14 @@ void draw_diagnostics_overlay()
 
 void render_isobus_page(std::vector<ScreenRect> &targets)
 {
-    draw_page_title("ISOBUS", "DIAGNOSTYKA SIECI WYSWIETLANA NA TERMINALU");
+    draw_page_title("ISOBUS", "NETWORK DIAGNOSTICS");
     const auto members = isobus::CANNetworkManager::CANNetwork.get_control_functions(false);
     char value[48];
     std::snprintf(value, sizeof(value), "%.1f %%", isobus::CANNetworkManager::CANNetwork.get_estimated_busload(0));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 365, "MAGISTRALA", "CAN 250 KBIT/S", true);
-    draw_value_row(LEFT_INFO_WIDTH + 423, 112, 365, "OBCIAZENIE", value, true);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 365, "BUS", "CAN 250 KBIT/S", true);
+    draw_value_row(LEFT_INFO_WIDTH + 423, 112, 365, "BUS LOAD", value, true);
     std::snprintf(value, sizeof(value), "%u", static_cast<unsigned>(members.size()));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 160, 365, "WEZLY ONLINE", value);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 160, 365, "NODES ONLINE", value);
     draw_value_row(LEFT_INFO_WIDTH + 423, 160, 365, "VT ADDRESS", "38 / 0X26");
 
     int y = 230;
@@ -2172,7 +2172,7 @@ void render_isobus_page(std::vector<ScreenRect> &targets)
         }
         const auto name = member->get_NAME();
         char line[96];
-        std::snprintf(line, sizeof(line), "SA %3u   FUNKCJA %3u   PROD %4u   NAME %016llX",
+        std::snprintf(line, sizeof(line), "SA %3u   FUNCTION %3u   MFR %4u   NAME %016llX",
                       static_cast<unsigned>(member->get_address()),
                       static_cast<unsigned>(name.get_function_code()),
                       static_cast<unsigned>(name.get_manufacturer_code()),
@@ -2181,7 +2181,7 @@ void render_isobus_page(std::vector<ScreenRect> &targets)
         y += 42;
         ++shown;
     }
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 480, 760, 70, "ODSWIEZ URZADZENIA", vt_scene_renderer::TerminalAction::RefreshNetwork, true);
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 480, 760, 70, "REFRESH DEVICES", vt_scene_renderer::TerminalAction::RefreshNetwork, true);
 }
 
 void render_aux_page(std::vector<ScreenRect> &targets,
@@ -2191,33 +2191,33 @@ void render_aux_page(std::vector<ScreenRect> &targets,
     const auto function_type_label = [](std::uint8_t function_type) -> const char * {
         switch (static_cast<aux_n::FunctionType>(function_type))
         {
-            case aux_n::FunctionType::BooleanLatching: return "WL/WYL";
-            case aux_n::FunctionType::AnalogueLatching: return "ANALOG STALY";
-            case aux_n::FunctionType::BooleanMomentary: return "PRZYCISK";
-            case aux_n::FunctionType::AnalogueMomentaryTwoWay: return "ANALOG 2-KIER";
-            case aux_n::FunctionType::AnalogueMomentaryOneWay: return "ANALOG 1-KIER";
-            case aux_n::FunctionType::DualBooleanLatching: return "2X WL/WYL";
-            case aux_n::FunctionType::DualBooleanMomentary: return "2X PRZYCISK";
-            case aux_n::FunctionType::DualBooleanLatchingUpOnly: return "2X GORA";
-            case aux_n::FunctionType::DualBooleanLatchingDownOnly: return "2X DOL";
-            case aux_n::FunctionType::AnalogueMomentaryBooleanLatching: return "ANALOG+WL/WYL";
-            case aux_n::FunctionType::AnalogueLatchingBooleanLatching: return "AN.STALY+WL/WYL";
-            case aux_n::FunctionType::QuadratureBooleanMomentary: return "KWADR PRZYCISK";
-            case aux_n::FunctionType::QuadratureAnalogueLatching: return "KWADR ANALOG ST";
-            case aux_n::FunctionType::QuadratureAnalogueMomentary: return "KWADR ANALOG";
-            case aux_n::FunctionType::BidirectionalEncoder: return "ENKODER 2-KIER";
-            default: return "NIEZNANY";
+            case aux_n::FunctionType::BooleanLatching: return "ON/OFF";
+            case aux_n::FunctionType::AnalogueLatching: return "ANALOG LATCH";
+            case aux_n::FunctionType::BooleanMomentary: return "BUTTON";
+            case aux_n::FunctionType::AnalogueMomentaryTwoWay: return "ANALOG 2-WAY";
+            case aux_n::FunctionType::AnalogueMomentaryOneWay: return "ANALOG 1-WAY";
+            case aux_n::FunctionType::DualBooleanLatching: return "2X ON/OFF";
+            case aux_n::FunctionType::DualBooleanMomentary: return "2X BUTTON";
+            case aux_n::FunctionType::DualBooleanLatchingUpOnly: return "2X UP";
+            case aux_n::FunctionType::DualBooleanLatchingDownOnly: return "2X DOWN";
+            case aux_n::FunctionType::AnalogueMomentaryBooleanLatching: return "ANALOG+ON/OFF";
+            case aux_n::FunctionType::AnalogueLatchingBooleanLatching: return "AN.LATCH+ON/OFF";
+            case aux_n::FunctionType::QuadratureBooleanMomentary: return "QUAD BUTTON";
+            case aux_n::FunctionType::QuadratureAnalogueLatching: return "QUAD AN LATCH";
+            case aux_n::FunctionType::QuadratureAnalogueMomentary: return "QUAD ANALOG";
+            case aux_n::FunctionType::BidirectionalEncoder: return "ENCODER 2-WAY";
+            default: return "UNKNOWN";
         }
     };
 
     aux_n::set_legacy_type1_enabled(terminal_settings.aux_o_legacy);
     const auto catalog = aux_n::get_catalog();
-    draw_page_title("AUX", terminal_settings.aux_o_legacy ? "TRYB ZGODNOSCI AUX-O / VT VERSION 2" : "AUX-N TYPE 2 / ISO 11783-6 VT VERSION 6");
+    draw_page_title("AUX", terminal_settings.aux_o_legacy ? "AUX-O COMPATIBILITY / VT VERSION 2" : "AUX-N TYPE 2 / ISO 11783-6 VT VERSION 6");
 
     char header[64];
-    std::snprintf(header, sizeof(header), "FUNKCJE MASZYNY: %u", static_cast<unsigned>(catalog.functions.size()));
+    std::snprintf(header, sizeof(header), "FUNCTIONS: %u", static_cast<unsigned>(catalog.functions.size()));
     lcd_panel::draw_text(LEFT_INFO_WIDTH + 28, 90, 2, header, 0x1082);
-    std::snprintf(header, sizeof(header), "WEJSCIA: %u", static_cast<unsigned>(catalog.inputs.size()));
+    std::snprintf(header, sizeof(header), "INPUTS: %u", static_cast<unsigned>(catalog.inputs.size()));
     lcd_panel::draw_text(LEFT_INFO_WIDTH + 420, 90, 2, header, 0x1082);
     const std::size_t function_page_count = std::max<std::size_t>(1, (catalog.functions.size() + 4U) / 5U);
     const std::size_t input_page_count = std::max<std::size_t>(1, (catalog.inputs.size() + 4U) / 5U);
@@ -2380,17 +2380,17 @@ void render_aux_page(std::vector<ScreenRect> &targets,
                        vt_scene_renderer::TerminalAction::ToggleAuxOLegacy,
                        terminal_settings.aux_o_legacy);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 220, bottom_y, button_width, 70,
-                       catalog.learning ? "UCZENIE..." : "UCZ PRZYCISK",
+                       catalog.learning ? "LEARNING..." : "LEARN INPUT",
                        vt_scene_renderer::TerminalAction::ToggleAuxLearn, catalog.learning);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 412, bottom_y, button_width, 70, "USUN WYBRANE",
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 412, bottom_y, button_width, 70, "CLEAR CHOICE",
                        vt_scene_renderer::TerminalAction::UnassignSelectedAux, false, true);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 604, bottom_y, button_width, 70, "USUN WSZYSTKIE",
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 604, bottom_y, button_width, 70, "CLEAR ALL",
                        vt_scene_renderer::TerminalAction::ClearAuxAssignments, false, true);
 }
 
 void render_gnss_page()
 {
-    draw_page_title("GNSS I SEKCJE", "STAN ODBIORNIKA, NTRIP I BLOKADY AUTOMATYKI");
+    draw_page_title("GNSS AND SECTIONS", "RECEIVER, NTRIP AND AUTOMATION STATUS");
     const auto gnss = gnss_um982::get_snapshot();
     const auto sections = section_control::get_snapshot();
 #if CONFIG_ISOVT_GNSS_SOURCE_UM982
@@ -2398,43 +2398,43 @@ void render_gnss_page()
 #elif CONFIG_ISOVT_GNSS_SOURCE_RS232
     constexpr const char *SOURCE = "NMEA RS232";
 #else
-    constexpr const char *SOURCE = "MODUL WYLACZONY";
+    constexpr const char *SOURCE = "MODULE OFF";
 #endif
-    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 760, "ZRODLO", SOURCE, gnss.receiver_configured);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 760, "SOURCE", SOURCE, gnss.receiver_configured);
     draw_value_row(LEFT_INFO_WIDTH + 28, 160, 760, "FIX", gnss_um982::fix_quality_text(gnss.fix_quality), gnss.position_valid);
     char value[64];
     std::snprintf(value, sizeof(value), "%u   HDOP %.2f", static_cast<unsigned>(gnss.satellites), gnss.hdop);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 208, 760, "SATELITY", value);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 208, 760, "SATELLITES", value);
     std::snprintf(value, sizeof(value), "%.2f KM/H   %.1f DEG", gnss.speed_mps * 3.6F, gnss.course_degrees);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 256, 760, "PREDKOSC / KIERUNEK", value);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 256, 760, "SPEED / COURSE", value);
     std::snprintf(value, sizeof(value), "%.7f   %.7f", gnss.latitude_degrees, gnss.longitude_degrees);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 304, 760, "POZYCJA", value);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 352, 760, "NTRIP", gnss.ntrip_enabled ? (gnss.ntrip_connected ? "POLACZONY" : "OCZEKIWANIE") : "WYLACZONY");
+    draw_value_row(LEFT_INFO_WIDTH + 28, 304, 760, "POSITION", value);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 352, 760, "NTRIP", gnss.ntrip_enabled ? (gnss.ntrip_connected ? "CONNECTED" : "WAITING") : "OFF");
 #if CONFIG_ISOVT_SECTION_CONTROL_ALLOW_RTK_FLOAT
-    constexpr const char *FIX_GATE = "RTK FLOAT LUB FIX";
+    constexpr const char *FIX_GATE = "RTK FLOAT OR FIX";
 #else
-    constexpr const char *FIX_GATE = "TYLKO RTK FIX";
+    constexpr const char *FIX_GATE = "RTK FIX ONLY";
 #endif
-    draw_value_row(LEFT_INFO_WIDTH + 28, 400, 760, "MINIMUM DLA SEKCJI", FIX_GATE);
-    std::snprintf(value, sizeof(value), "%s   %u SEKCJI   WYJSCIA ZABLOKOWANE",
+    draw_value_row(LEFT_INFO_WIDTH + 28, 400, 760, "MINIMUM FOR SECTIONS", FIX_GATE);
+    std::snprintf(value, sizeof(value), "%s   %u SECTIONS   OUTPUTS LOCKED",
                   section_control::gate_state_text(sections.gate_state),
                   static_cast<unsigned>(sections.configured_sections));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 448, 760, "AUTOMATYKA", value, sections.gate_state == section_control::GateState::Ready);
-    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 526, 2, "WYJSCIA POZOSTAJA ZABLOKOWANE DO IMPLEMENTACJI TC-SC", 0x52AA);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 448, 760, "AUTOMATION", value, sections.gate_state == section_control::GateState::Ready);
+    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 526, 2, "OUTPUTS LOCKED UNTIL TC-SC IS IMPLEMENTED", 0x52AA);
 }
 
 void render_audio_page(std::vector<ScreenRect> &targets)
 {
-    draw_page_title("DZWIEK", "GLOSNOSC SYGNALOW TERMINALA I ALARMOW MASZYNY");
+    draw_page_title("AUDIO", "TERMINAL SIGNAL AND MACHINE ALARM VOLUME");
 
     char value[32];
     std::snprintf(value, sizeof(value), "%u %%", static_cast<unsigned>(terminal_settings.control_volume));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 480, "SYGNALY ROBOCZE", value, !terminal_settings.audio_muted);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 480, "CONTROL SIGNALS", value, !terminal_settings.audio_muted);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 530, 112, 120, 64, "-", vt_scene_renderer::TerminalAction::DecreaseControlVolume, true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 668, 112, 120, 64, "+", vt_scene_renderer::TerminalAction::IncreaseControlVolume, true);
 
     std::snprintf(value, sizeof(value), "%u %%", static_cast<unsigned>(terminal_settings.alarm_volume));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 202, 480, "ALARMY", value, !terminal_settings.audio_muted);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 202, 480, "ALARMS", value, !terminal_settings.audio_muted);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 530, 202, 120, 64, "-", vt_scene_renderer::TerminalAction::DecreaseAlarmVolume, true);
     draw_screen_button(targets, LEFT_INFO_WIDTH + 668, 202, 120, 64, "+", vt_scene_renderer::TerminalAction::IncreaseAlarmVolume, true);
 
@@ -2443,31 +2443,31 @@ void render_audio_page(std::vector<ScreenRect> &targets)
                        302,
                        760,
                        70,
-                       terminal_settings.audio_muted ? "DZWIEK WYCISZONY - WLACZ" : "DZWIEK WLACZONY - WYCISZ",
+                       terminal_settings.audio_muted ? "AUDIO MUTED - UNMUTE" : "AUDIO ON - MUTE",
                        vt_scene_renderer::TerminalAction::ToggleAudioMute,
                        !terminal_settings.audio_muted,
                        true);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 396, 365, 76, "TEST SYGNALU", vt_scene_renderer::TerminalAction::TestControlAudio, true);
-    draw_screen_button(targets, LEFT_INFO_WIDTH + 423, 396, 365, 76, "TEST ALARMU", vt_scene_renderer::TerminalAction::TestAlarmAudio, true);
-    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 514, 2, "ZAKRES 0-100 %, KROK 5 %. USTAWIENIA SA ZAPAMIETYWANE.", 0x52AA);
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 28, 396, 365, 76, "TEST SIGNAL", vt_scene_renderer::TerminalAction::TestControlAudio, true);
+    draw_screen_button(targets, LEFT_INFO_WIDTH + 423, 396, 365, 76, "TEST ALARM", vt_scene_renderer::TerminalAction::TestAlarmAudio, true);
+    lcd_panel::draw_text(LEFT_INFO_WIDTH + 42, 514, 2, "RANGE 0-100 %, STEP 5 %. SETTINGS ARE SAVED.", 0x52AA);
 }
 
 void render_information_page()
 {
-    draw_page_title("INFORMACJE", "MOZLIWOSCI I STAN TERMINALA");
+    draw_page_title("INFORMATION", "TERMINAL CAPABILITIES AND STATUS");
     const esp_app_desc_t *app = esp_app_get_description();
-    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 760, "OPROGRAMOWANIE", app ? app->project_name : "ESP ISOBUS VT", true);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 160, 760, "WERSJA VT",
+    draw_value_row(LEFT_INFO_WIDTH + 28, 112, 760, "SOFTWARE", app ? app->project_name : "ESP ISOBUS VT", true);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 160, 760, "VT VERSION",
                    terminal_settings.aux_o_legacy ? "ISO 11783-6 VT VERSION 2" : "ISO 11783-6 VT VERSION 6");
-    draw_value_row(LEFT_INFO_WIDTH + 28, 208, 760, "EKRAN", "1024 X 600 DOTYKOWY");
-    draw_value_row(LEFT_INFO_WIDTH + 28, 256, 760, "OBSZAR / SOFTKEY", "480 X 480 / 12 KLAWISZY");
+    draw_value_row(LEFT_INFO_WIDTH + 28, 208, 760, "SCREEN", "1024 X 600 TOUCH");
+    draw_value_row(LEFT_INFO_WIDTH + 28, 256, 760, "AREA / SOFTKEYS", "480 X 480 / 12 KEYS");
     draw_value_row(LEFT_INFO_WIDTH + 28, 304, 760, "AUX",
                    terminal_settings.aux_o_legacy ? "AUX-O TYPE 1 (LEGACY)" : "AUX-N TYPE 2");
-    draw_value_row(LEFT_INFO_WIDTH + 28, 352, 760, "PAMIEC PUL", "SPIFFS FLASH");
+    draw_value_row(LEFT_INFO_WIDTH + 28, 352, 760, "POOL STORAGE", "SPIFFS FLASH");
     char heap[32];
     std::snprintf(heap, sizeof(heap), "%u KB", static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_8BIT) / 1024U));
-    draw_value_row(LEFT_INFO_WIDTH + 28, 400, 760, "WOLNA PAMIEC RAM", heap);
-    draw_value_row(LEFT_INFO_WIDTH + 28, 448, 760, "DIAGNOSTYKA", "TYLKO NA EKRANIE");
+    draw_value_row(LEFT_INFO_WIDTH + 28, 400, 760, "FREE RAM", heap);
+    draw_value_row(LEFT_INFO_WIDTH + 28, 448, 760, "DIAGNOSTICS", "ON SCREEN ONLY");
 }
 
 void render_terminal_menu(
@@ -2479,7 +2479,7 @@ void render_terminal_menu(
     lcd_panel::fill(CHROME_DARK);
     lcd_panel::fill_rect(0, 0, LEFT_INFO_WIDTH, board::LCD_HEIGHT, CHROME_DARK);
     lcd_panel::draw_text(18, 18, 3, "ISOBUS VT", CHROME_TEXT);
-    lcd_panel::draw_text(18, 52, 2, "MENU TERMINALA", CHROME_BORDER);
+    lcd_panel::draw_text(18, 52, 2, "TERMINAL MENU", CHROME_BORDER);
 
     struct NavigationItem
     {
@@ -2487,13 +2487,13 @@ void render_terminal_menu(
         vt_scene_renderer::TerminalAction action;
     };
     constexpr NavigationItem ITEMS[] = {
-        { "MASZYNY", vt_scene_renderer::TerminalAction::ShowMachines },
+        { "MACHINES", vt_scene_renderer::TerminalAction::ShowMachines },
         { "TERMINAL", vt_scene_renderer::TerminalAction::ShowTerminal },
         { "ISOBUS", vt_scene_renderer::TerminalAction::ShowIsobus },
         { "AUX-N", vt_scene_renderer::TerminalAction::ShowAuxN },
-        { "GNSS / SEKCJE", vt_scene_renderer::TerminalAction::ShowGnss },
-        { "DZWIEK", vt_scene_renderer::TerminalAction::ShowAudio },
-        { "INFORMACJE", vt_scene_renderer::TerminalAction::ShowInformation },
+        { "GNSS / SECT", vt_scene_renderer::TerminalAction::ShowGnss },
+        { "AUDIO", vt_scene_renderer::TerminalAction::ShowAudio },
+        { "INFORMATION", vt_scene_renderer::TerminalAction::ShowInformation },
     };
     int y = 88;
     for (const auto &item : ITEMS)
@@ -2501,7 +2501,7 @@ void render_terminal_menu(
         draw_screen_button(targets, 12, y, LEFT_INFO_WIDTH - 24, 50, item.label, item.action, terminal_page == item.action);
         y += 58;
     }
-    draw_screen_button(targets, 12, 506, LEFT_INFO_WIDTH - 24, 76, "POWROT", vt_scene_renderer::TerminalAction::ToggleMenu, true);
+    draw_screen_button(targets, 12, 506, LEFT_INFO_WIDTH - 24, 76, "BACK", vt_scene_renderer::TerminalAction::ToggleMenu, true);
 
     switch (terminal_page)
     {
@@ -2630,9 +2630,9 @@ void render_input_editor(std::vector<ScreenRect> &targets, RenderContext *contex
     lcd_panel::fill_rect(panel_x, panel_y, panel_width, panel_height, 0xFFFF);
     draw_outline(panel_x, panel_y, panel_width, panel_height, CHROME_BORDER, 3);
 
-    const char *title = editor.kind == vt_scene_renderer::InputEditorKind::Number ? "WPROWADZ LICZBE" :
-                        editor.kind == vt_scene_renderer::InputEditorKind::Text ? "WPROWADZ TEKST" :
-                                                                                 "WYBIERZ POZYCJE";
+    const char *title = editor.kind == vt_scene_renderer::InputEditorKind::Number ? "ENTER NUMBER" :
+                        editor.kind == vt_scene_renderer::InputEditorKind::Text ? "ENTER TEXT" :
+                                                                                 "SELECT ITEM";
     lcd_panel::fill_rect(panel_x, panel_y, panel_width, 58, CHROME_BACKGROUND);
     lcd_panel::draw_text(panel_x + 24, panel_y + 17, 3, title, CHROME_TEXT);
 
@@ -2685,9 +2685,9 @@ void render_input_editor(std::vector<ScreenRect> &targets, RenderContext *contex
                 }
             }
         }
-        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 92, 112, 72, "GORA", vt_scene_renderer::EditorAction::Previous);
-        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 178, 112, 72, "DOL", vt_scene_renderer::EditorAction::Next);
-        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 350, 112, 72, "ANULUJ", vt_scene_renderer::EditorAction::Cancel);
+        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 92, 112, 72, "UP", vt_scene_renderer::EditorAction::Previous);
+        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 178, 112, 72, "DOWN", vt_scene_renderer::EditorAction::Next);
+        draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 350, 112, 72, "CANCEL", vt_scene_renderer::EditorAction::Cancel);
         draw_editor_key(targets, panel_x + panel_width - 142, panel_y + 436, 112, 72, "OK", vt_scene_renderer::EditorAction::Confirm, '\0', 0, true);
         return;
     }
@@ -2723,9 +2723,9 @@ void render_input_editor(std::vector<ScreenRect> &targets, RenderContext *contex
                             vt_scene_renderer::EditorAction::Character,
                             character);
         }
-        draw_editor_key(targets, panel_x + 500, panel_y + 158, 170, 76, "COFNIJ", vt_scene_renderer::EditorAction::Backspace);
-        draw_editor_key(targets, panel_x + 688, panel_y + 158, 170, 76, "WYCZYSC", vt_scene_renderer::EditorAction::Clear);
-        draw_editor_key(targets, panel_x + 500, panel_y + 422, 170, 76, "ANULUJ", vt_scene_renderer::EditorAction::Cancel);
+        draw_editor_key(targets, panel_x + 500, panel_y + 158, 170, 76, "BACKSPACE", vt_scene_renderer::EditorAction::Backspace);
+        draw_editor_key(targets, panel_x + 688, panel_y + 158, 170, 76, "CLEAR", vt_scene_renderer::EditorAction::Clear);
+        draw_editor_key(targets, panel_x + 500, panel_y + 422, 170, 76, "CANCEL", vt_scene_renderer::EditorAction::Cancel);
         draw_editor_key(targets, panel_x + 688, panel_y + 422, 170, 76, "OK", vt_scene_renderer::EditorAction::Confirm, '\0', 0, true);
         return;
     }
@@ -2751,10 +2751,10 @@ void render_input_editor(std::vector<ScreenRect> &targets, RenderContext *contex
                             label[0]);
         }
     }
-    draw_editor_key(targets, panel_x + 30, panel_y + 430, 160, 66, "COFNIJ", vt_scene_renderer::EditorAction::Backspace);
-    draw_editor_key(targets, panel_x + 202, panel_y + 430, 160, 66, "WYCZYSC", vt_scene_renderer::EditorAction::Clear);
-    draw_editor_key(targets, panel_x + 374, panel_y + 430, 180, 66, "SPACJA", vt_scene_renderer::EditorAction::Character, ' ');
-    draw_editor_key(targets, panel_x + 566, panel_y + 430, 140, 66, "ANULUJ", vt_scene_renderer::EditorAction::Cancel);
+    draw_editor_key(targets, panel_x + 30, panel_y + 430, 160, 66, "BACKSPACE", vt_scene_renderer::EditorAction::Backspace);
+    draw_editor_key(targets, panel_x + 202, panel_y + 430, 160, 66, "CLEAR", vt_scene_renderer::EditorAction::Clear);
+    draw_editor_key(targets, panel_x + 374, panel_y + 430, 180, 66, "SPACE", vt_scene_renderer::EditorAction::Character, ' ');
+    draw_editor_key(targets, panel_x + 566, panel_y + 430, 140, 66, "CANCEL", vt_scene_renderer::EditorAction::Cancel);
     draw_editor_key(targets, panel_x + 718, panel_y + 430, 140, 66, "OK", vt_scene_renderer::EditorAction::Confirm, '\0', 0, true);
 }
 #endif
